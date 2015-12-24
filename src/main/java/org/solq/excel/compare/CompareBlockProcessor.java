@@ -54,7 +54,7 @@ public class CompareBlockProcessor implements IProcessor {
 
 		// 新增行
 		// 删除行
-		
+		//TODO 未完成 暂时未知算法
 		for(Entry<String, Map<Integer, List<String>>> entry : newbody.entrySet()){
 			final String key = entry.getKey();
 			 Map<Integer, List<String>> newTable = newbody.get(key);
@@ -64,17 +64,17 @@ public class CompareBlockProcessor implements IProcessor {
 			 int oldIndex = 0;
 			 
 			 int mazSize = Math.max(newTable.size(), oldTable.size());
-			 for(int i =0;i<mazSize;i++){
-				 List<String> newData = newTable.get(newIndex);
-				 int tIndex= oldIndex;
-				 
-				 while(tIndex++ < mazSize){
-					 List<String> oldData = oldTable.get(tIndex);
-					 if(checkData(newData,oldData)){
-						 
-					 }
-				 }
-			 }
+//			 for(int i =0;i<mazSize;i++){
+//				 List<String> newData = newTable.get(newIndex);
+//				 int tIndex= oldIndex;
+//				 
+//				 while(tIndex++ < mazSize){
+//					 List<String> oldData = oldTable.get(tIndex);
+//					 if(checkData(newData,oldData)){
+//						 
+//					 }
+//				 }
+//			 }
 		}
 	}
 
