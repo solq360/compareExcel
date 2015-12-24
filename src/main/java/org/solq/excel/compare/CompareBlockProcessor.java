@@ -1,10 +1,14 @@
 package org.solq.excel.compare;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.solq.excel.FilterInfo;
 
 public class CompareBlockProcessor implements IProcessor {
 
@@ -35,7 +39,7 @@ public class CompareBlockProcessor implements IProcessor {
 		if (!newTable.isEmpty()) {
 			for (String table : newTable) {
 				newbody.remove(table);
-				System.out.println( newFile + " 新增表 : " + " : " + table);
+				System.out.println(newFile + " 新增表 : " + " : " + table);
 			}
 		}
 
@@ -52,38 +56,171 @@ public class CompareBlockProcessor implements IProcessor {
 			Map<String, Map<Integer, List<String>>> newbody,
 			Map<String, Map<Integer, List<String>>> oldbody) {
 
-		// 新增行
-		// 删除行
-		//TODO 未完成 暂时未知算法
-		for(Entry<String, Map<Integer, List<String>>> entry : newbody.entrySet()){
+		String t = "\t";
+		// 过滤相同行数据
+		// 取主建
+		// 取行数
+		for (Entry<String, Map<Integer, List<String>>> entry : newbody
+				.entrySet()) {
+			List<FilterInfo> filterInfos = new LinkedList<FilterInfo>();
+
 			final String key = entry.getKey();
-			 Map<Integer, List<String>> newTable = newbody.get(key);
-			 Map<Integer, List<String>> oldTable = oldbody.get(key);
-			 
-			 int newIndex =0;
-			 int oldIndex = 0;
-			 
-			 int mazSize = Math.max(newTable.size(), oldTable.size());
-//			 for(int i =0;i<mazSize;i++){
-//				 List<String> newData = newTable.get(newIndex);
-//				 int tIndex= oldIndex;
-//				 
-//				 while(tIndex++ < mazSize){
-//					 List<String> oldData = oldTable.get(tIndex);
-//					 if(checkData(newData,oldData)){
-//						 
-//					 }
-//				 }
-//			 }
+			Map<Integer, List<String>> newTable = newbody.get(key);
+			Map<Integer, List<String>> oldTable = oldbody.get(key);
+			final int mazSize = Math.max(newTable.size(), oldTable.size());
+
+			filterEqual(newTable, oldTable, mazSize);
+			filterEqual(oldTable, newTable, mazSize);
+
+			List<FilterInfo> infos = filterKey(newTable, oldTable, mazSize);
+			filterInfos.addAll(infos);
+			
+			infos = filterRow(newTable, oldTable, mazSize);
+			filterInfos.addAll(infos);
+			System.out.println(key);
+			for (FilterInfo info : filterInfos) {
+				System.out.println("--------------------------------");
+				System.out.println(t + newFile + " : 行数 " + info.getNewIndex()
+						+ info.toNewData());
+				System.out.println(t + oldFile + " : 行数 " + info.getOldIndex()
+						+ info.toOldData());
+			}
+		}
+
+	}
+
+	/***
+	 * 取行数
+	 * */
+	private List<FilterInfo> filterRow(Map<Integer, List<String>> newTable,
+			Map<Integer, List<String>> oldTable, int maxSize) {
+
+		List<FilterInfo> filterInfos = new ArrayList<>(maxSize);
+		for (int i = 0; i < maxSize; i++) {
+			List<String> newData = newTable.get(i);
+			List<String> oldData = oldTable.get(i);
+			if (newData == null && oldData == null) {
+				continue;
+			}
+			filterInfos.add(FilterInfo.of(i, newData, i, oldData));
+		}
+		return filterInfos;
+	}
+
+	/***
+	 * 过滤相同行数据
+	 * */
+	private List<FilterInfo> filterKey(Map<Integer, List<String>> newTable,
+			Map<Integer, List<String>> oldTable, int maxSize) {
+		int newIndex = 0;
+		int oldIndex = 0;
+		List<FilterInfo> filterInfos = new ArrayList<>(maxSize);
+		for (int i = 0; i < maxSize; i++) {
+			List<String> newData = newTable.get(newIndex);
+			if (newData == null || newData.size() < 2) {
+				newIndex++;
+				continue;
+			}
+			int tIndex = oldIndex - 1;
+			while (tIndex++ < maxSize) {
+				List<String> oldData = oldTable.get(tIndex);
+				if (oldData == null || oldData.size() < 2) {
+					continue;
+				}
+				int checkCelIndex = 1;
+				if (!checkCell(newData, oldData, checkCelIndex)) {
+					continue;
+				}
+				oldTable.remove(tIndex);
+				newTable.remove(newIndex);
+
+				filterInfos.add(FilterInfo.of(newIndex, newData, tIndex,
+						oldData));
+				oldIndex++;
+				break;
+			}
+			newIndex++;
+		}
+		return filterInfos;
+	}
+
+	private boolean checkCell(List<String> newData, List<String> oldData,
+			int index) {
+		String n = newData.get(index);
+		String o = oldData.get(index);
+		if (n == null) {
+			n = "";
+		}
+		if (o == null) {
+			o = "";
+		}
+		return n.trim().equals(o.trim());
+	}
+
+	/***
+	 * 过滤相同行数据
+	 * */
+	private void filterEqual(Map<Integer, List<String>> newTable,
+			Map<Integer, List<String>> oldTable, int maxSize) {
+		int newIndex = 0;
+		int oldIndex = 0;
+
+		for (int i = 0; i < maxSize; i++) {
+			List<String> newData = newTable.get(newIndex);
+			if (newData == null) {
+				newIndex++;
+				continue;
+			}
+			int tIndex = oldIndex - 1;
+			while (tIndex++ < maxSize) {
+				List<String> oldData = oldTable.get(tIndex);
+				if (!checkData(newData, oldData)) {
+					continue;
+				}
+				oldTable.remove(tIndex);
+				newTable.remove(newIndex);
+				oldIndex++;
+				break;
+			}
+			newIndex++;
 		}
 	}
 
 	private boolean checkData(List<String> newData, List<String> oldData) {
-		if(newData==null || oldData==null){
+		if (newData == null || oldData == null) {
 			return false;
 		}
-		
- 		return false;
+
+		if (newData.size() == oldData.size()) {
+			for (int i = 0; i < newData.size(); i++) {
+				if (!checkCell(newData, oldData, i)) {
+					return false;
+				}
+			}
+		}
+		int newLastEmptyIndex = findLastEmptyIndex(newData);
+		int oldLastEmptyIndex = findLastEmptyIndex(oldData);
+		if (newLastEmptyIndex != oldLastEmptyIndex) {
+			return false;
+		}
+		// 二次检查
+		for (int i = 0; i < newLastEmptyIndex; i++) {
+			if (!checkCell(newData, oldData, i)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private int findLastEmptyIndex(List<String> data) {
+		int result = data.size() - 1;
+		for (int i = result; i >= 0; i--) {
+			String d = data.get(i);
+			if (d != null && d.trim() != null) {
+				return i;
+			}
+		}
+		return result;
 	}
 
 }

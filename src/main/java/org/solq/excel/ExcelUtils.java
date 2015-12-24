@@ -88,8 +88,7 @@ public abstract class ExcelUtils {
 			if (row == null) {
 				continue;
 			}
-			Cell cell = row.getCell(0);
-			if (cell == null) {
+			if (row.getLastCellNum() < 0) {
 				continue;
 			}
 			result.add(sheet);
@@ -117,6 +116,10 @@ public abstract class ExcelUtils {
 				tmp.put(start, new LinkedList<String>());
 				List<String> celDatas = tmp.get(start);
 				Row row = sheet.getRow(start);
+				if (row == null) {
+					//System.out.println("row is null : " + sheet.getSheetName() + " : " + start);
+					continue;
+				}
 				// 循环列
 				for (int c = 0; c < row.getLastCellNum(); c++) {
 					celDatas.add(getCellContent(row, c));
