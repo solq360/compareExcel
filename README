@@ -1,7 +1,28 @@
-https://github.com/solq360
+https://github.com/solq360/compareExcel
 ===================
 
-* 编写未完成
+
+* jdk 1.7 可自己编译1.6
 * 每个sheet第一行不允许为空
 * SVN对比excel差异
 * 适合策划、财务职业使用
+* svn集成 "G:\numerical\common\release\run.bat" %base %mine //E:vbscript
+
+============
+
+
+* 修改release bun.bat
+* 修改JAVA_HOME jdk目录
+* 修改programPath run.bat保存目录
+
+```
+SET JAVA_HOME=D:\jdk1.8.0_51
+SET programPath=G:\numerical\common\release
+```
+
+
+![image](https://raw.githubusercontent.com/solq360/compareExcel/master/release/svn-integration.png)
+
+![image](https://raw.githubusercontent.com/solq360/compareExcel/master/release/a.jpg)
+
+![image](https://raw.githubusercontent.com/solq360/compareExcel/master/release/b.jpg)

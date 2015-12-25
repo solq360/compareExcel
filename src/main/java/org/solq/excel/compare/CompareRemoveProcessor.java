@@ -5,15 +5,13 @@ import java.util.Map;
 
 public class CompareRemoveProcessor implements IProcessor {
 
-	public boolean compare(String newFile, String oldFile,
-			Map<String, Map<Integer, List<String>>> newbody,
-			Map<String, Map<Integer, List<String>>> oldbody) {
-		if (!newFile.isEmpty()) {
-			return false;
-		}
-
-		System.out.println("文件为空 : " + newFile);
-		return true;
+    public boolean compare(String newFile, String oldFile, Map<String, Map<Integer, List<String>>> newbody, Map<String, Map<Integer, List<String>>> oldbody) {
+	if (!newFile.isEmpty()) {
+	    return false;
 	}
+
+	System.out.println("文件为空 : " + newFile);
+	return true;
+    }
 
 }
