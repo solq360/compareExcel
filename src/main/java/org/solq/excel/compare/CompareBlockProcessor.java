@@ -88,7 +88,7 @@ public class CompareBlockProcessor implements IProcessor {
      */
     private List<FilterInfo> filterRow(Map<Integer, List<String>> newTable, Map<Integer, List<String>> oldTable, int maxSize) {
 
-	List<FilterInfo> filterInfos = new ArrayList<>(maxSize);
+	List<FilterInfo> filterInfos = new ArrayList<FilterInfo>(maxSize);
 	for (int i = 0; i < maxSize; i++) {
 	    List<String> newData = newTable.get(i);
 	    List<String> oldData = oldTable.get(i);
@@ -106,7 +106,7 @@ public class CompareBlockProcessor implements IProcessor {
     private List<FilterInfo> filterKey(Map<Integer, List<String>> newTable, Map<Integer, List<String>> oldTable, int maxSize) {
 	int newIndex = 0;
 	int oldIndex = 0;
-	List<FilterInfo> filterInfos = new ArrayList<>(maxSize);
+	List<FilterInfo> filterInfos = new ArrayList<FilterInfo>(maxSize);
 	for (int i = 0; i < maxSize; i++) {
 	    List<String> newData = newTable.get(newIndex);
 	    if (newData == null || newData.size() < 2) {

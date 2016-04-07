@@ -1,5 +1,6 @@
 package org.solq.excel;
 
+import java.util.Collections;
 import java.util.List;
 
 public class FilterInfo {
@@ -9,8 +10,15 @@ public class FilterInfo {
     private int oldIndex;
     private List<String> oldData;
 
+    @SuppressWarnings("unchecked")
     public static FilterInfo of(int newIndex, List<String> newData, int oldIndex, List<String> oldData) {
 	FilterInfo reuslt = new FilterInfo();
+	if (newData == null) {
+	    newData = Collections.EMPTY_LIST;
+	}
+	if (oldData == null) {
+	    oldData = Collections.EMPTY_LIST;
+	}
 	reuslt.newData = newData;
 	reuslt.oldData = oldData;
 	reuslt.oldIndex = oldIndex;
@@ -19,25 +27,38 @@ public class FilterInfo {
     }
 
     public String toNewData() {
-	if (newData == null) {
-	    return "";
-	}
-	StringBuilder sb = new StringBuilder();
-	for (String n : newData) {
-	    sb.append("\t");
-	    sb.append(n);
-	}
-	return sb.toString();
+	return formatInfo(newData, oldData);
+
     }
 
     public String toOldData() {
-	if (oldData == null) {
+	return formatInfo(oldData, newData);
+    }
+
+    private String formatInfo(List<String> d1, List<String> d2) {
+	if (d1 == null) {
 	    return "";
 	}
 	StringBuilder sb = new StringBuilder();
-	for (String n : oldData) {
+	final int d2Len = d2.size() - 1;
+	for (int i = 0; i < d1.size(); i++) {
+	    String n = d1.get(i);
 	    sb.append("\t");
-	    sb.append(n);
+	    boolean addFlag = false;
+	    if (d2Len > i && n != null) {
+		String n2 = d2.get(i);
+		if (n2 != null && !n2.equals(n)) {
+		    addFlag = true;
+		}
+	    }
+
+	    if (addFlag) {
+		sb.append("********* ");
+		sb.append(n);
+		sb.append(" *********");
+	    } else {
+		sb.append(n);
+	    }
 	}
 	return sb.toString();
     }
